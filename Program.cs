@@ -5,6 +5,8 @@ using LaboratoriosRestAPI;
 using LaboratoriosRestAPI.Models;
 using LaboratoriosRestAPI.Repository;
 using LaboratoriosRestAPI.Repository.Implementations;
+using LaboratoriosRestAPI.Services.Implementations;
+using LaboratoriosRestAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 class Program
@@ -14,9 +16,14 @@ class Program
         var builder = WebApplication.CreateBuilder(args);
 
 // Registrar o contexto e serviços no container de DI
-        builder.Services.AddDbContext<BookLendingContext>();
-        builder.Services.AddScoped<ILivroRepository, LivroRepository>();
-        builder.Services.AddScoped<ILivroService, LivroService>();
+        builder.Services.AddScoped<IAutorRepository, AutorRepository>();
+        builder.Services.AddScoped<IAutorService, AutorService>();
+
+        builder.Services.AddScoped<IEmprestimoRepository, EmprestimoRepository>();
+        builder.Services.AddScoped<IEmprestimoService, EmprestimoService>();
+        
+        builder.Services.AddScoped<IEmprestimoRepository, EmprestimoRepository>();
+        builder.Services.AddScoped<IEmprestimoService, EmprestimoService>();
 
 // Add suporte à API
         builder.Services.AddControllers();

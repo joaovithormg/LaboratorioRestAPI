@@ -1,4 +1,5 @@
 using LaboratoriosRestAPI.Models;
+using LaboratoriosRestAPI.Repository;
 using LaboratoriosRestAPI.Services.Interfaces;
 
 namespace LaboratoriosRestAPI.Services.Implementations;
@@ -19,7 +20,7 @@ public class EmprestimoService: IEmprestimoService
 
     public async Task<Emprestimo> GetByIdAsync(int id)
     {
-        return await _emprestimoRepository.GetByIdAsybc(id);
+        return await _emprestimoRepository.GetByIdAsync(id);
     }
 
     public async Task AddAsync(Emprestimo emprestimo)

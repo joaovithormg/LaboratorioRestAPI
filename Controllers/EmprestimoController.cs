@@ -1,3 +1,5 @@
+using LaboratoriosRestAPI.Services.Interfaces;
+
 namespace LaboratoriosRestAPI.Controllers;
 
 using LaboratoriosRestAPI.Models;

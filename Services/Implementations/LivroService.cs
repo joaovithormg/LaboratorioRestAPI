@@ -1,4 +1,5 @@
 using LaboratoriosRestAPI.Models;
+using LaboratoriosRestAPI.Repository;
 using LaboratoriosRestAPI.Services.Interfaces;
 
 namespace LaboratoriosRestAPI.Services.Implementations;
@@ -19,7 +20,7 @@ public class LivroService: ILivroService
 
     public async Task<Livro> GetByIdAsync(int id)
     {
-        return await _livroRepository.GetByIdAsybc(id);
+        return await _livroRepository.GetByIdAsync(id);
     }
 
     public async Task AddAsync(Livro livro)

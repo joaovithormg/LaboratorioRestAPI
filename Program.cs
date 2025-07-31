@@ -1,41 +1,55 @@
-var builder = WebApplication.CreateBuilder(args);
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using LaboratoriosRestAPI;
+using LaboratoriosRestAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+class Program
 {
-    app.MapOpenApi();
-}
-
-app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
+    static async Task Main(string[] args)
     {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast");
+        using var db = new BookLendingContext();
 
-app.Run();
+        Console.WriteLine($"Database path: {db.DbPath}.");
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        // Garante que o banco está criado
+        await db.Database.EnsureCreatedAsync();
+
+        // CREATE - Inserindo um novo autor e livro
+        Console.WriteLine("Inserindo novo autor e livro...");
+
+        var autor = new Autor { PrimeiroNome = "João Vithor", UltimoNome = "Moraes"};
+        var livro = new Livro { Titulo = "Aprendendo EF Core", AnoPublicacao = 2024, Autores = new List<Autor> { autor } };
+
+        db.Autores.Add(autor);
+        db.Livros.Add(livro);
+        await db.SaveChangesAsync();
+
+        // READ - Consultando livros
+        Console.WriteLine("Consultando livros no banco:");
+
+        var livros = await db.Livros
+            .ToListAsync();
+
+        foreach (var l in livros)
+        {
+            Console.WriteLine($"Livro: {l.Titulo}, Autor: {l.Autores}");
+        }
+
+        // UPDATE - Atualizando o título do livro
+        Console.WriteLine("Atualizando título do livro...");
+
+        var primeiroLivro = await db.Livros.FirstAsync();
+        primeiroLivro.Titulo = "EF Core Avançado";
+        await db.SaveChangesAsync();
+
+        // DELETE - Removendo o livro
+        Console.WriteLine("Removendo o livro...");
+
+        db.Livros.Remove(primeiroLivro);
+        await db.SaveChangesAsync();
+
+        Console.WriteLine("Operações concluídas.");
+    }
 }

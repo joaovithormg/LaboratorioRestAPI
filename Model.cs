@@ -1,3 +1,5 @@
+using LaboratoriosRestAPI.Models;
+
 namespace LaboratoriosRestAPI;
 
 using Microsoft.EntityFrameworkCore;

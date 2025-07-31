@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using LaboratoriosRestAPI;
 using LaboratoriosRestAPI.Models;
+using LaboratoriosRestAPI.Repository;
+using LaboratoriosRestAPI.Repository.Implementations;
 using Microsoft.EntityFrameworkCore;
 
 class Program
@@ -27,5 +29,5 @@ class Program
         app.MapControllers();
 
         app.Run();
-
+    }
 }

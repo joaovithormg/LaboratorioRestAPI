@@ -1,40 +1,57 @@
+using AutoMapper;
+using LaboratoriosRestAPI.DTOs;
 using LaboratoriosRestAPI.Models;
-using LaboratoriosRestAPI.Repository;
 using LaboratoriosRestAPI.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
-namespace LaboratoriosRestAPI.Services.Implementations;
+namespace LaboratoriosRestAPI.Services;
 
-public class AutorService: IAutorService
+public class AutorService : IAutorService
 {
-    private readonly IAutorRepository _autorRepository;
+    private readonly BookLendingContext _context;
+    private readonly IMapper _mapper;
 
-    public AutorService(IAutorRepository autorRepository)
+    public AutorService(BookLendingContext context, IMapper mapper)
     {
-        _autorRepository = autorRepository;
+        _context = context;
+        _mapper = mapper;
     }
 
-    public async Task<IEnumerable<Autor>> GetAllAsync()
+    public async Task<IEnumerable<AutorDTO.ReadAutorDto>> GetAllAsync()
     {
-        return await _autorRepository.GetAllAsync();
+        var autores = await _context.Autores.ToListAsync();
+        return _mapper.Map<List<AutorDTO.ReadAutorDto>>(autores);
     }
 
-    public async Task<Autor> GetByIdAsync(int id)
+    public async Task<AutorDTO.ReadAutorDto?> GetByIdAsync(int id)
     {
-        return await _autorRepository.GetByIdAsync(id);
+        var autor = await _context.Autores.FindAsync(id);
+        return autor == null ? null : _mapper.Map<AutorDTO.ReadAutorDto>(autor);
     }
 
-    public async Task AddAsync(Autor autor)
+    public async Task<AutorDTO.ReadAutorDto> AddAsync(AutorDTO.CreateAutorDto dto)
     {
-        await _autorRepository.AddAsync(autor);
+        var autor = _mapper.Map<Autor>(dto);
+        _context.Autores.Add(autor);
+        await _context.SaveChangesAsync();
+        return _mapper.Map<AutorDTO.ReadAutorDto>(autor);
     }
 
-    public async Task UpdateAsync(Autor autor)
+    public async Task UpdateAsync(int id, AutorDTO.UpdateAutorDto dto)
     {
-        await _autorRepository.UpdateAsync(autor);
+        var autor = await _context.Autores.FindAsync(id);
+        if (autor == null) throw new Exception("Autor não encontrado");
+
+        _mapper.Map(dto, autor);
+        await _context.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(int id)
     {
-        await _autorRepository.DeleteAsync(id);
+        var autor = await _context.Autores.FindAsync(id);
+        if (autor == null) throw new Exception("Autor não encontrado");
+
+        _context.Autores.Remove(autor);
+        await _context.SaveChangesAsync();
     }
 }

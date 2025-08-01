@@ -1,40 +1,72 @@
+using AutoMapper;
+using LaboratoriosRestAPI.DTOs;
 using LaboratoriosRestAPI.Models;
-using LaboratoriosRestAPI.Repository;
 using LaboratoriosRestAPI.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
-namespace LaboratoriosRestAPI.Services.Implementations;
+namespace LaboratoriosRestAPI.Services;
 
-public class EmprestimoService: IEmprestimoService
+public class EmprestimoService : IEmprestimoService
 {
-    private readonly IEmprestimoRepository _emprestimoRepository;
+    private readonly BookLendingContext _context;
+    private readonly IMapper _mapper;
 
-    public EmprestimoService(IEmprestimoRepository emprestimoRepository)
+    public EmprestimoService(BookLendingContext context, IMapper mapper)
     {
-        _emprestimoRepository = emprestimoRepository;
+        _context = context;
+        _mapper = mapper;
     }
 
-    public async Task<IEnumerable<Emprestimo>> GetAllAsync()
+    public async Task<IEnumerable<EmprestimoDTO.ReadEmprestimoDto>> GetAllAsync()
     {
-        return await _emprestimoRepository.GetAllAsync();
+        var emprestimos = await _context.Emprestimos
+            .Include(e => e.Livro)
+            .Include(e => e.Livro.Autores)
+            .ToListAsync();
+        return _mapper.Map<List<EmprestimoDTO.ReadEmprestimoDto>>(emprestimos);
     }
 
-    public async Task<Emprestimo> GetByIdAsync(int id)
+    public async Task<EmprestimoDTO.ReadEmprestimoDto?> GetByIdAsync(int id)
     {
-        return await _emprestimoRepository.GetByIdAsync(id);
+        var emprestimo = await _context.Emprestimos
+            .Include(e => e.Livro)
+            .Include(e => e.Livro.Autores)
+            .FirstOrDefaultAsync(e => e.Id == id);
+        return emprestimo == null ? null : _mapper.Map<EmprestimoDTO.ReadEmprestimoDto>(emprestimo);
     }
 
-    public async Task AddAsync(Emprestimo emprestimo)
+    public async Task<EmprestimoDTO.ReadEmprestimoDto> AddAsync(EmprestimoDTO.CreateEmprestimoDto dto)
     {
-        await _emprestimoRepository.AddAsync(emprestimo);
+        var emprestimo = _mapper.Map<Emprestimo>(dto);
+        emprestimo.Livro = await _context.Livros.FindAsync(dto.LivroId);
+
+        _context.Emprestimos.Add(emprestimo);
+        await _context.SaveChangesAsync();
+
+        return _mapper.Map<EmprestimoDTO.ReadEmprestimoDto>(emprestimo);
     }
 
-    public async Task UpdateAsync(Emprestimo emprestimo)
+    public async Task UpdateAsync(int id, EmprestimoDTO.UpdateEmprestimoDto dto)
     {
-        await _emprestimoRepository.UpdateAsync(emprestimo);
+        var emprestimo = await _context.Emprestimos.FindAsync(id);
+        if (emprestimo == null)
+            throw new Exception("Empréstimo não encontrado.");
+
+        _mapper.Map(dto, emprestimo);
+
+        emprestimo.Livro = await _context.Livros.FindAsync(id);
+
+        _context.Emprestimos.Update(emprestimo);
+        await _context.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(int id)
     {
-        await _emprestimoRepository.DeleteAsync(id);
+        var emprestimo = await _context.Emprestimos.FindAsync(id);
+        if (emprestimo == null)
+            throw new Exception("Empréstimo não encontrado.");
+
+        _context.Emprestimos.Remove(emprestimo);
+        await _context.SaveChangesAsync();
     }
 }

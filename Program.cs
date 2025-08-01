@@ -3,10 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using LaboratoriosRestAPI;
 using LaboratoriosRestAPI.Controllers;
+using LaboratoriosRestAPI.Mappings;
 using LaboratoriosRestAPI.Models;
 using LaboratoriosRestAPI.Repository;
 using LaboratoriosRestAPI.Repository.Implementations;
-using LaboratoriosRestAPI.Services.Implementations;
+using LaboratoriosRestAPI.Services;
 using LaboratoriosRestAPI.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,6 +34,7 @@ class Program
         // Add suporte à API
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddAutoMapper(typeof(MappingProfile));
 
         var app = builder.Build();
 

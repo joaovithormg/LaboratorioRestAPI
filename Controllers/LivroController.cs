@@ -1,48 +1,57 @@
+using AutoMapper;
+using LaboratoriosRestAPI.DTOs;
+using LaboratoriosRestAPI.Models;
 using LaboratoriosRestAPI.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace LaboratoriosRestAPI.Controllers;
-
-using LaboratoriosRestAPI.Models;
-using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
 public class LivroController : ControllerBase
 {
     private readonly ILivroService _livroService;
+    private readonly IMapper _mapper;
 
-    public LivroController(ILivroService livroService)
+    public LivroController(ILivroService livroService, IMapper mapper)
     {
         _livroService = livroService;
+        _mapper = mapper;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Livro>>> GetAll()
+    public async Task<IActionResult> GetAll()
     {
         var livros = await _livroService.GetAllAsync();
-        return Ok(livros);
+        var livrosDto = _mapper.Map<List<LivroDTO.ReadLivroDto>>(livros);
+        return Ok(livrosDto);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Livro>> GetById(int id)
+    public async Task<IActionResult> GetById(int id)
     {
         var livro = await _livroService.GetByIdAsync(id);
         if (livro == null) return NotFound();
-        return Ok(livro);
+        return Ok(_mapper.Map<LivroDTO.ReadLivroDto>(livro));
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(Livro livro)
+    public async Task<IActionResult> Create(LivroDTO.CreateLivroDto dto)
     {
-        await _livroService.AddAsync(livro);
-        return CreatedAtAction(nameof(GetById), new { id = livro.Id }, livro);
+        var livro = _mapper.Map<Livro>(dto);
+        await _livroService.AddAsync(dto);
+        var livroRead = _mapper.Map<LivroDTO.ReadLivroDto>(livro);
+        return CreatedAtAction(nameof(GetById), new { id = livro.Id }, livroRead);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, Livro livro)
+    public async Task<IActionResult> Update(int id, LivroDTO.UpdateLivroDto dto)
     {
-        if (id != livro.Id) return BadRequest();
-        await _livroService.UpdateAsync(livro);
+        var livro = await _livroService.GetByIdAsync(id);
+        if (livro == null) return NotFound();
+
+        _mapper.Map(dto, livro);
+        await _livroService.UpdateAsync(id, dto);
         return NoContent();
     }
 

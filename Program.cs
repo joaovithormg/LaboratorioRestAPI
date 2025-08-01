@@ -16,7 +16,7 @@ class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-// Registrar o contexto e serviços no container de DI
+        // Registrar o contexto e serviços no container de DI
 
         builder.Services.AddDbContext<BookLendingContext>(options =>
             options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -30,7 +30,7 @@ class Program
         builder.Services.AddScoped<ILivroService, LivroService>();
         builder.Services.AddScoped<ILivroRepository, LivroRepository>();
 
-// Add suporte à API
+        // Add suporte à API
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
 

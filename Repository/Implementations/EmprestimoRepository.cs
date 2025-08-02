@@ -28,6 +28,16 @@ public class EmprestimoRepository : IEmprestimoRepository
             .FirstOrDefaultAsync(e => e.Id == id);
     }
 
+    public async Task<Emprestimo?> GetByBookIdAsync(int id)
+    {
+        return await _context.Emprestimos
+            .Include(e => e.Livro)
+            .Include(e => e.Livro.Autores)
+            .Where(e => e.Livro.Id == id && e.Entregue == false)
+            .FirstOrDefaultAsync();
+            
+    }
+
     public async Task AddAsync(Emprestimo emprestimo, int id)
     {
         var livro = await _context.Livros.FindAsync(id);

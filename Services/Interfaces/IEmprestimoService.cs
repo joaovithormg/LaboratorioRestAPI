@@ -6,6 +6,7 @@ public interface IEmprestimoService
 {
     Task<IEnumerable<EmprestimoDTO.ReadEmprestimoDto>> GetAllAsync();
     Task<EmprestimoDTO.ReadEmprestimoDto?> GetByIdAsync(int id);
+    Task<EmprestimoDTO.ReadEmprestimoDto?> GetByBookIdAsync(int id);
     Task<EmprestimoDTO.ReadEmprestimoDto> AddAsync(EmprestimoDTO.CreateEmprestimoDto dto);
     Task UpdateAsync(int id, EmprestimoDTO.UpdateEmprestimoDto dto);
     Task DeleteAsync(int id);

@@ -30,6 +30,12 @@ public class EmprestimoService : IEmprestimoService
         return emprestimo == null ? null : _mapper.Map<EmprestimoDTO.ReadEmprestimoDto>(emprestimo);
     }
 
+    public async Task<EmprestimoDTO.ReadEmprestimoDto?> GetByBookIdAsync(int id)
+    {
+        var emprestimo =  await _repository.GetByBookIdAsync(id);
+        return emprestimo == null ? null : _mapper.Map<EmprestimoDTO.ReadEmprestimoDto>(emprestimo);
+    }
+
     public async Task<EmprestimoDTO.ReadEmprestimoDto> AddAsync(EmprestimoDTO.CreateEmprestimoDto dto)
     {
         var emprestimo = _mapper.Map<Emprestimo>(dto);

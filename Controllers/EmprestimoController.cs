@@ -35,6 +35,14 @@ public class EmprestimoController : ControllerBase
         return Ok(_mapper.Map<EmprestimoDTO.ReadEmprestimoDto>(emp));
     }
 
+    [HttpGet("emprestimoLivro/{id}")]
+    public async Task<IActionResult> GetEmprestimoLivro(int id)
+    {
+        var emp = await _service.GetByBookIdAsync(id);
+        if (emp == null) return NotFound();
+        return Ok(_mapper.Map<EmprestimoDTO.ReadEmprestimoDto>(emp));
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create(EmprestimoDTO.CreateEmprestimoDto dto)
     {

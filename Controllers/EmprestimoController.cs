@@ -41,7 +41,7 @@ public class EmprestimoController : ControllerBase
         var emp = _mapper.Map<Emprestimo>(dto);
         await _service.AddAsync(dto);
         var empRead = _mapper.Map<EmprestimoDTO.ReadEmprestimoDto>(emp);
-        return CreatedAtAction(nameof(GetById), new { id = emp.Id }, empRead);
+        return StatusCode(201, empRead);
     }
 
     [HttpPut("{id}")]

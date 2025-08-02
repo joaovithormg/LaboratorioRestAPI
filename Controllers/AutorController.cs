@@ -23,8 +23,7 @@ public class AutorController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var autores = await _service.GetAllAsync();
-        var autoresDto = _mapper.Map<List<AutorDTO.ReadAutorDto>>(autores);
-        return Ok(autoresDto);
+        return Ok(autores);
     }
 
     [HttpGet("{id}")]
@@ -41,7 +40,7 @@ public class AutorController : ControllerBase
         var autor = _mapper.Map<Autor>(dto);
         await _service.AddAsync(dto);
         var autorRead = _mapper.Map<AutorDTO.ReadAutorDto>(autor);
-        return CreatedAtAction(nameof(GetById), new { id = autor.Id }, autorRead);
+        return StatusCode(201, autorRead);
     }
 
     [HttpPut("{id}")]
@@ -49,9 +48,8 @@ public class AutorController : ControllerBase
     {
         if (id == 0) return BadRequest();
         var autor = await _service.GetByIdAsync(id);
-        if (autor == null) return NotFound();   
+        if (autor == null) return NotFound();
 
-        _mapper.Map(dto, autor);
         await _service.UpdateAsync(id, dto);
         return NoContent();
     }

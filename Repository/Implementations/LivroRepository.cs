@@ -14,26 +14,53 @@ public class LivroRepository : ILivroRepository
 
     public async Task<IEnumerable<Livro>> GetAllAsync()
     {
-        return await _context.Livros.Include(l => l.Autores).ToListAsync();
+        return await _context.Livros
+            .Include(l => l.Autores)
+            .ToListAsync();
     }
 
     public async Task<Livro?> GetByIdAsync(int id)
     {
-        return await _context.Livros.Include(l => l.Autores).FirstOrDefaultAsync(l => l.Id == id);
+        return await _context.Livros
+            .Include(l => l.Autores)
+            .FirstOrDefaultAsync(l => l.Id == id);
     }
 
-    public async Task AddAsync(Livro livro)
+    public async Task AddAsync(Livro livro, List<int> autoresIds)
     {
+        if (autoresIds != null && autoresIds.Any())
+        {
+            livro.Autores = await _context.Autores
+                .Where(a => autoresIds.Contains(a.Id))
+                .ToListAsync();
+        }
+        else
+        {
+            livro.Autores = new List<Autor>();
+        }
+
         _context.Livros.Add(livro);
         await _context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(Livro livro)
+
+    public async Task UpdateAsync(Livro livro, List<int> autoresIds)
     {
+        if (autoresIds != null && autoresIds.Any())
+        {
+            livro.Autores = await _context.Autores
+                .Where(a => autoresIds.Contains(a.Id))
+                .ToListAsync();
+        }
+        else
+        {
+            livro.Autores = new List<Autor>();
+        }
+
         _context.Livros.Update(livro);
         await _context.SaveChangesAsync();
     }
-
+    
     public async Task DeleteAsync(int id)
     {
         var livro = await _context.Livros.FindAsync(id);

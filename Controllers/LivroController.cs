@@ -22,8 +22,7 @@ public class LivroController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var livros = await _livroService.GetAllAsync();
-        var livrosDto = _mapper.Map<List<LivroDTO.ReadLivroDto>>(livros);
+        var livrosDto = await _livroService.GetAllAsync();
         return Ok(livrosDto);
     }
 
@@ -32,16 +31,14 @@ public class LivroController : ControllerBase
     {
         var livro = await _livroService.GetByIdAsync(id);
         if (livro == null) return NotFound();
-        return Ok(_mapper.Map<LivroDTO.ReadLivroDto>(livro));
+        return Ok(livro);
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(LivroDTO.CreateLivroDto dto)
     {
-        var livro = _mapper.Map<Livro>(dto);
-        await _livroService.AddAsync(dto);
-        var livroRead = _mapper.Map<LivroDTO.ReadLivroDto>(livro);
-        return CreatedAtAction(nameof(GetById), new { id = livro.Id }, livroRead);
+        var livroRead = await _livroService.AddAsync(dto);
+        return StatusCode(201, livroRead);
     }
 
     [HttpPut("{id}")]
@@ -50,7 +47,6 @@ public class LivroController : ControllerBase
         var livro = await _livroService.GetByIdAsync(id);
         if (livro == null) return NotFound();
 
-        _mapper.Map(dto, livro);
         await _livroService.UpdateAsync(id, dto);
         return NoContent();
     }

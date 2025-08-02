@@ -30,6 +30,13 @@ public class AutorService : IAutorService
         return autor == null ? null : _mapper.Map<AutorDTO.ReadAutorDto>(autor);
     }
 
+    public async Task<List<AutorDTO.ReadAutorDto?>> GetByLastName(string lastName)
+    {
+        Console.WriteLine(lastName);
+        var autores =  await _repository.GetByLastName(lastName);
+        return _mapper.Map<List<AutorDTO.ReadAutorDto>>(autores);
+    }
+
     public async Task<AutorDTO.ReadAutorDto> AddAsync(AutorDTO.CreateAutorDto dto)
     {
         var autor = _mapper.Map<Autor>(dto);

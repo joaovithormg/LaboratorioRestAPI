@@ -34,6 +34,14 @@ public class AutorController : ControllerBase
         return Ok(_mapper.Map<AutorDTO.ReadAutorDto>(autor));
     }
 
+    [HttpGet("ultimoNome")]
+    public async Task<ActionResult> GetByLastName([FromQuery] string ultimoNome)
+    {
+        Console.WriteLine(ultimoNome);
+        var autores = await _service.GetByLastName(ultimoNome);
+        return Ok(autores);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create(AutorDTO.CreateAutorDto dto)
     {

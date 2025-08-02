@@ -31,7 +31,6 @@ public class LivroService : ILivroService
 
         return livro == null ? null : _mapper.Map<LivroDTO.ReadLivroDto>(livro);
     }
-
     public async Task<LivroDTO.ReadLivroDto> AddAsync(LivroDTO.CreateLivroDto dto)
     {
         var livro = _mapper.Map<Livro>(dto);

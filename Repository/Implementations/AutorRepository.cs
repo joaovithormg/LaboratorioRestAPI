@@ -22,6 +22,14 @@ public class AutorRepository : IAutorRepository
         return await _context.Autores.Include(a => a.Livros).FirstOrDefaultAsync(a => a.Id == id);
     }
 
+    public async Task<List<Autor?>> GetByLastName(string lastName)
+    {
+        return await _context.Autores
+            .Where(a => a.UltimoNome == lastName)
+            .Include(a => a.Livros) 
+            .ToListAsync();
+    }
+
     public async Task AddAsync(Autor autor)
     {
         _context.Autores.Add(autor);

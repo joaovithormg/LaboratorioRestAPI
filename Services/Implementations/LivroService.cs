@@ -31,6 +31,12 @@ public class LivroService : ILivroService
 
         return livro == null ? null : _mapper.Map<LivroDTO.ReadLivroDto>(livro);
     }
+
+    public async Task<IEnumerable<LivroDTO.ReadLivroDto>> GetByAutor(int id)
+    {
+        var livros = await  _repository.GetByAutor(id);
+        return _mapper.Map<List<LivroDTO.ReadLivroDto>>(livros);
+    }
     public async Task<LivroDTO.ReadLivroDto> AddAsync(LivroDTO.CreateLivroDto dto)
     {
         var livro = _mapper.Map<Livro>(dto);

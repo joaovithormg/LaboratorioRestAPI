@@ -34,6 +34,15 @@ public class LivroController : ControllerBase
         return Ok(livro);
     }
 
+    [HttpGet("livrosAutor/{id}")]
+    public async Task<IActionResult> GetByLivroAutor(int id)
+    {
+        var livros = await _livroService.GetByAutor(id);
+        if (livros == null) return NotFound();
+        
+        return Ok(livros);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create(LivroDTO.CreateLivroDto dto)
     {

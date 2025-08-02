@@ -26,6 +26,14 @@ public class LivroRepository : ILivroRepository
             .FirstOrDefaultAsync(l => l.Id == id);
     }
 
+    public async Task<IEnumerable<Livro>> GetByAutor(int id)
+    {
+        return await _context.Livros
+            .Include(l => l.Autores)
+            .Where(l => l.Autores.Any(a => a.Id == id))
+            .ToListAsync();
+    }
+
     public async Task AddAsync(Livro livro, List<int> autoresIds)
     {
         if (autoresIds != null && autoresIds.Any())
